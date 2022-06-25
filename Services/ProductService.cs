@@ -1,55 +1,80 @@
-using Ecom.Models;
+    using Ecom.Models;
+    using Ecom.Data;
+    using Microsoft.EntityFrameworkCore;
 
-namespace Ecom.Services;
-public static class ProductService
-{
-
-static List<Product> Products {get;}
-
-static int nextProductId = 3;
-
-static ProductService()
-{  
-    Products = new List<Product>
-    { 
-        new Product{ProductId = 1 , ProductName = "Toothpaste" , ProductPrice = 40},
-        new Product{ProductId = 2 , ProductName = "Detergent" , ProductPrice = 400 }
-    };
-
-}
-
-
-
-public static List<Product> GetAll() => Products ;
-public static Product? Get(int id) => Products.FirstOrDefault(product => product.ProductId == id);
-
-public static void Add(Product product)
+    namespace Ecom.Services;
+    public class ProductService
     {
-        product.ProductId = nextProductId++;
-        Products.Add(product);
+        
+        private readonly EcomContext _context;
+
+        public ProductService(EcomContext context)
+        {
+            _context = context;
+        }
+
+        public List<Product> GetAll()
+        {
+            return _context.Products.AsNoTracking().ToList();
+        }
+        public Product? Get(int id) => _context.Products.FirstOrDefault(product => product.ProductId == id);
+
+        public Product? Add(Product product)
+        {
+                _context.Add(product);
+                _context.SaveChanges();
+
+                return product;
+        }
+
+                
+        
+        public void Delete(int id)
+        {
+            var TBDProduct = _context.Products.Find(id);
+
+            if(TBDProduct is not null)
+            {
+                _context.Products.Remove(TBDProduct);
+                _context.SaveChanges();
+            }        
+
+        }
+
+        public IEnumerable<Product> ProductsbyCustomer(int id)
+        {
+
+        IEnumerable<Transaction> AllTransactions = _context.Transactions.AsNoTracking().ToList();
+
+        var RequiredTransactions = _context.Transactions.Where(t => t.CustomerId == id);
+
+       
+       var RequiredProducts = new List<Product>();
+
+       foreach(Transaction t in RequiredTransactions)
+       {
+            foreach(Product p in t.Products)
+            {
+                RequiredProducts.Add(p);
+            }
+       }
+          return RequiredProducts;
+        }
+
+
+
+
+        public void Update(int id, Product product)
+        {
+            var TBUProduct = _context.Products.Find(id);
+
+            if(TBUProduct is null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            TBUProduct = product;
+
+        }
+
     }
-
-
-public static void Delete(int id)
-    {
-        var product = Get(id);
-
-        if(product is null)
-        return;
-
-        Products.Remove(product);
-
-    }
-
-
-    public static void Update(Product product)
-{
-    var index = Products.FindIndex(p => p.ProductId == product.ProductId);
-    if(index ==-1)
-        return;
-
-    Products[index] = product;
-
-}
-
-}

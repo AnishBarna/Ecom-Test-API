@@ -1,53 +1,90 @@
 using Ecom.Models;
+using Ecom.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecom.Services;
-public static class CustomerService
+public class CustomerService
 {
 
-    static List<Customer> Customers {get;}
+    private readonly EcomContext _context ;
 
-    static int  nextCustomerId = 3;
-
-     static CustomerService()
+    public CustomerService(EcomContext context)
     {
-        Customers = new List<Customer> 
+        _context = context;
+    }
+    
+    public IEnumerable<Customer> GetAll()
+    {
+        return _context.Customers.AsNoTracking().Include(p => p.Transactions).ToList();
+    }
+
+        
+    public Customer? Get(int id)
+    {
+        return _context.Customers.AsNoTracking().SingleOrDefault(p => p.CustomerId == id);
+    }
+
+    
+    
+    
+    public IEnumerable<Customer> GetbyDate(DateTime date)
+    {
+        var RequiredTransactions = _context.Transactions.Where(t => t.TransactionDate == date).AsNoTracking().ToList();
+
+        var AllCustomers = _context.Customers.AsNoTracking().ToList();
+        
+        var RequiredCustomers = new List<Customer>();
+
+        foreach (Transaction t in RequiredTransactions)
         {
-            new Customer{CustomerId = 1 , CustomerAge = 30, CustomerName = "Joey"},
-            new Customer{CustomerId = 2 , CustomerAge = 35, CustomerName = "Ross"}
-        };
+            foreach(Customer c in AllCustomers)
+            {
+                if(c.CustomerId == t.CustomerId)
+                {
+                    RequiredCustomers.Add(c);
+                }
+            }
+        }
+    
+        return RequiredCustomers;
     }
+// Need to find an efficient implementation for the same
 
 
-
-    public static List<Customer> GetAll() => Customers ;
-    public static Customer? Get(int id) => Customers.FirstOrDefault(customer => customer.CustomerId == id);
-
-
-    public static void Add(Customer customer)
+      
+    public Customer Add(Customer customer)
     {
-        customer.CustomerId = nextCustomerId++;
-        Customers.Add(customer);
+        _context.Add(customer);
+        _context.SaveChanges();
+
+        return customer;
     }
 
-    public static void Delete(int id)
+    public void Delete(int id)
     {
-        var customer = Get(id);
+        var TBDCustomer = _context.Customers.Find(id);
 
-        if(customer is null)
-        return;
-
-        Customers.Remove(customer);
+        if(TBDCustomer is not null)
+        {
+            _context.Customers.Remove(TBDCustomer);
+            _context.SaveChanges();
+        }
 
     }
 
 
-    public static void Update(Customer customer)
+public void Update(int id, Customer customer)
 {
-    var index = Customers.FindIndex(c => c.CustomerId == customer.CustomerId);
-    if(index ==-1)
-        return;
+    var TBUCustomer = _context.Customers.Find(id);
 
-    Customers[index] = customer;
+    if(TBUCustomer is null)
+    {
+        throw new InvalidOperationException();
+    }
+
+
+    TBUCustomer = customer;
+    _context.SaveChanges();
 
 }
 

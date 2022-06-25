@@ -8,18 +8,21 @@ namespace Ecom.Controllers;
 [Route("[controller]")]
 public class TransactionController : ControllerBase
 {
-    public TransactionController()
+    
+    TransactionService transaction_service;
+
+    public TransactionController(TransactionService service)
     {
-        
+        transaction_service = service;
     }
 
     [HttpGet]
-    public ActionResult<List<Transaction>> GetAll() => TransactionService.GetAll();
+    public IEnumerable<Transaction> GetAll() => transaction_service.GetAll();
 
     [HttpGet("{id}")]
     public ActionResult<Transaction> Get(int id)
     {
-        var transaction = TransactionService.Get(id);
+        var transaction = transaction_service.Get(id);
 
         if(transaction is null)
         return NotFound();
@@ -29,45 +32,31 @@ public class TransactionController : ControllerBase
 
 
     [HttpGet("bycustomer/{id}")]
-    public ActionResult<List<Transaction>> GetByCustomer(int id) => TransactionService.GetByCustomer(id);
+    public IEnumerable<Transaction>? GetByCustomer(int id)
+    {
+       return transaction_service.GetByCustomer(id);
+    } 
 
-    [HttpGet("byproduct/{id}")]
-    public ActionResult<List<Transaction>> GetByProduct(int id) => TransactionService.GetByProduct(id);
 
     [HttpPost]
     public IActionResult Create(Transaction transaction)
     {
-        TransactionService.Add(transaction);
+        transaction_service.Add(transaction);
+
         return CreatedAtAction( nameof(Create), new { id = transaction.TransactionId}, transaction);
         
-    }
-
-    [HttpPut("id")]
-    public IActionResult Update(int id, Transaction transaction)
-    {
-        if(id != transaction.TransactionId)
-            return BadRequest();
-
-        var existingTransaction = TransactionService.Get(id);
-        if(existingTransaction is null)
-            return NotFound();
-
-            TransactionService.Update(transaction);
-
-            return NoContent();
-
     }
 
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var transaction = TransactionService.Get(id);
+        var transaction = transaction_service.Get(id);
 
         if(transaction is null)
             return NotFound();
 
-            TransactionService.Delete(id);
+            transaction_service.Delete(id);
 
             return NoContent();
     }

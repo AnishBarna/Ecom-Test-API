@@ -10,19 +10,23 @@ namespace Ecom.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    public ProductController()
-    {
 
+    ProductService product_service;
+  
+    public ProductController(ProductService p_service)
+    {
+        product_service = p_service;
+        
     }
 
 
     [HttpGet]
-    public ActionResult<List<Product>> GetAll() => ProductService.GetAll() ;
+    public IEnumerable<Product> GetAll() => product_service.GetAll() ;
 
     [HttpGet("{id}")]
     public ActionResult<Product> Get(int id)
     {
-        var product = ProductService.Get(id);
+        var product = product_service.Get(id);
 
         if(product is null)
         {
@@ -32,10 +36,17 @@ public class ProductController : ControllerBase
         return product;
     }
 
+
+    [HttpGet("byCustomer/{id}")]
+    public IEnumerable<Product> GetByCustomer(int id)
+    {
+        return product_service.ProductsbyCustomer(id);
+    }
+
     [HttpPost]
     public IActionResult Create(Product product)
     {
-        ProductService.Add(product);
+        product_service.Add(product);
         return CreatedAtAction( nameof(Create), new { id = product.ProductId} , product);
 
     }
@@ -46,12 +57,12 @@ public class ProductController : ControllerBase
         if(id != product.ProductId)
             return BadRequest();
 
-        var existingProduct = ProductService.Get(id);
+        var existingProduct = product_service.Get(id);
 
         if(existingProduct is null)
             return NotFound();
 
-            ProductService.Update(product);
+            product_service.Update(id, product);
 
             return NoContent();
 
@@ -61,14 +72,13 @@ public class ProductController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var product = ProductService.Get(id);
+        var product = product_service.Get(id);
 
         if(product is null)
             return NotFound();
 
-            ProductService.Delete(id);
+            product_service.Delete(id);
 
             return NoContent();
     }
 }
-
