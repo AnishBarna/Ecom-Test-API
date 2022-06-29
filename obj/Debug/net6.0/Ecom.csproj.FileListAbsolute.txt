@@ -52,3 +52,5 @@ E:\C# APIs\Ecom\bin\Debug\net6.0\runtimes\win-arm\native\e_sqlite3.dll
 E:\C# APIs\Ecom\bin\Debug\net6.0\runtimes\win-arm64\native\e_sqlite3.dll
 E:\C# APIs\Ecom\bin\Debug\net6.0\runtimes\win-x64\native\e_sqlite3.dll
 E:\C# APIs\Ecom\bin\Debug\net6.0\runtimes\win-x86\native\e_sqlite3.dll
+E:\C# APIs\Ecom\bin\Debug\net6.0\Npgsql.dll
+E:\C# APIs\Ecom\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

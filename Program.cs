@@ -1,10 +1,13 @@
 using Ecom.Data;
 using Ecom.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSqlite<EcomContext>("Data Source=Ecom.db");
+builder.Services.AddDbContext<EcomContext>(
+    options => options.UseNpgsql(builder.Configuration.GetConnectionString("EcomDb"))
+);
 
 
 
@@ -19,6 +22,7 @@ builder.Services.AddScoped<ProductService>();
 
 
 var app = builder.Build();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
