@@ -13,20 +13,22 @@ public static class DBInitializer
     
         var customers = new Customer[]
         {
-        new Customer{ CustomerName = "Customer1" , CustomerAge = 26 },
-        new Customer{ CustomerName = "Customer2" , CustomerAge = 27 },
-        new Customer{ CustomerName = "Customer3" , CustomerAge = 28 },
-        new Customer{ CustomerName = "Customer4" , CustomerAge = 29 },
-        new Customer{ CustomerName = "Customer5" , CustomerAge = 30 },
-        new Customer{ CustomerName = "Customer6" , CustomerAge = 31 },
-        new Customer{ CustomerName = "Customer7" , CustomerAge = 32 },
-        new Customer{ CustomerName = "Customer8" , CustomerAge = 33 },
-        new Customer{ CustomerName = "Customer9" , CustomerAge = 34 },
-        new Customer{ CustomerName = "Customer10" , CustomerAge = 35 }
+                
+                new Customer{ CustomerName = "Customer1" , CustomerAge = 26 },
+                new Customer{ CustomerName = "Customer2" , CustomerAge = 27 },
+                new Customer{ CustomerName = "Customer3" , CustomerAge = 28 },
+                new Customer{ CustomerName = "Customer4" , CustomerAge = 29 },
+                new Customer{ CustomerName = "Customer5" , CustomerAge = 30 },
+                new Customer{ CustomerName = "Customer6" , CustomerAge = 31 },
+                new Customer{ CustomerName = "Customer7" , CustomerAge = 32 },
+                new Customer{ CustomerName = "Customer8" , CustomerAge = 33 },
+                new Customer{ CustomerName = "Customer9" , CustomerAge = 34 },
+                new Customer{ CustomerName = "Customer10" , CustomerAge = 35 }
         
         };
         
         context.Customers.AddRange(customers);
+        context.SaveChanges();
         
 
         var product1 = new Product{ ProductName = "Product1" , ProductPrice = 26 };
